@@ -6,3 +6,38 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model task {
+  id           Int        @id @default(autoincrement())
+  userId       Int
+  title        String     @db.VarChar(50)
+  details      String
+  status       TaskStatus
+  TasksToUsers user       @relation("TasksToUsers", fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+enum TaskStatus {
+  BACKLOG
+  READY
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+
+model tag {
+  id         Int    @id @default(autoincrement())
+  userId     Int
+  title      String
+  color      String @db.VarChar(6)
+  TagsToUser user   @relation("TagsToUsers", fields: [userId], references: [id])
+}
+
+model user {
+  id           Int    @id @default(autoincrement())
+  username     String @unique(map: "username") @db.VarChar(30)
+  password     String @db.Char(100)
+  UsersToTasks task[] @relation("TasksToUsers")
+  UsersToTags  tag[]  @relation("TagsToUsers")
+}
