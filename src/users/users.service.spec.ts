@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 describe('UsersService', () => {
   let usersService: UsersService;
   let prismaService: PrismaService;
+  const password = '1234567890';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,8 +15,13 @@ describe('UsersService', () => {
 
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
+
+    await usersService.insertOne({ username: 'users_test', password });
   });
 
+  afterEach(async () => {
+    await usersService.deleteOne('users_test');
+  });
 
   afterAll(async () => {
     await prismaService.$disconnect();
@@ -26,17 +32,18 @@ describe('UsersService', () => {
   });
 
   it('[insertOne]: should insert user', async () => {
-    const username = 'test';
-    const password = '1234567890';
+    const username = 'users_test2';
 
     const res = await usersService.insertOne({ username, password });
+
+    await usersService.deleteOne(username);
+
     expect(res.username).toBe(username);
     expect(res.password).toBe(password);
   });
 
   it('[insertOne]: should throw internal server error when duplicated username', () => {
-    const username = 'test';
-    const password = '1234567890';
+    const username = 'users_test';
 
     expect(usersService.insertOne({ username, password })).rejects.toThrow(
       InternalServerErrorException
@@ -49,13 +56,13 @@ describe('UsersService', () => {
   });
 
   it('[exists]: should return true when user exists', async () => {
-    const res = await usersService.exists('test');
+    const res = await usersService.exists('users_test');
     expect(res).toBeTruthy();
   });
 
   it('[findOne]: should return user', async () => {
-    const res = await usersService.findOne('test');
-    expect(res.username).toBe('test');
+    const res = await usersService.findOne('users_test');
+    expect(res.username).toBe('users_test');
     expect(res.password).toBe('1234567890');
   });
 
@@ -66,8 +73,11 @@ describe('UsersService', () => {
   });
 
   it('[deleteOne]: should delete user', async () => {
-    const res = await usersService.deleteOne('test');
-    expect(res.username).toBe('test');
+    const username = 'users_test2';
+    await usersService.insertOne({ username, password });
+    const res = await usersService.deleteOne(username);
+    
+    expect(res.username).toBe(username);
   });
 
   it('[deleteOne]: should throw internal server error when no username', () => {
