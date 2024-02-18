@@ -15,11 +15,11 @@ describe('UsersService', () => {
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
 
-    await usersService.insertOne({ username: 'test', password: '1234567890' });
+    await usersService.insertOne({ username: 'users_test', password: '1234567890' });
   });
 
   afterEach(async () => {
-    await usersService.deleteOne('test');
+    await usersService.deleteOne('users_test');
   });
 
   afterAll(async () => {
@@ -31,7 +31,7 @@ describe('UsersService', () => {
   });
 
   it('[insertOne]: should insert user', async () => {
-    const username = 'test2';
+    const username = 'users_test2';
     const password = '1234567890';
 
     const res = await usersService.insertOne({ username, password });
@@ -43,7 +43,7 @@ describe('UsersService', () => {
   });
 
   it('[insertOne]: should throw internal server error when duplicated username', () => {
-    const username = 'test';
+    const username = 'users_test';
     const password = '1234567890';
 
     expect(usersService.insertOne({ username, password })).rejects.toThrow(
@@ -57,13 +57,13 @@ describe('UsersService', () => {
   });
 
   it('[exists]: should return true when user exists', async () => {
-    const res = await usersService.exists('test');
+    const res = await usersService.exists('users_test');
     expect(res).toBeTruthy();
   });
 
   it('[findOne]: should return user', async () => {
-    const res = await usersService.findOne('test');
-    expect(res.username).toBe('test');
+    const res = await usersService.findOne('users_test');
+    expect(res.username).toBe('users_test');
     expect(res.password).toBe('1234567890');
   });
 
@@ -74,7 +74,7 @@ describe('UsersService', () => {
   });
 
   it('[deleteOne]: should delete user', async () => {
-    const username = 'test2';
+    const username = 'users_test2';
     const password = '1234567890';
 
     await usersService.insertOne({ username, password });

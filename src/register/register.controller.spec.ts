@@ -29,7 +29,7 @@ describe('RegisterController', () => {
   });
 
   it('should call registerService.register and return the response', async () => {
-    const registerData = { username: 'test3', password: '1234567890' };
+    const registerData = { username: 'register_test3', password: '1234567890' };
     const responseMock: any = { send: jest.fn() } as any;
 
     const registerServiceSpy = jest.spyOn(registerService, 'register').mockResolvedValueOnce({ message: 'You have been successfully registered' });

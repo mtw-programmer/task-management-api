@@ -22,12 +22,6 @@ describe('RegisterService', () => {
     registerService = module.get<RegisterService>(RegisterService);
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
-
-    await usersService.insertOne({ username: 'test', password: '1234567890' });
-  })
-
-  afterEach(async () => {
-    await usersService.deleteOne('test');
   });
 
   afterAll(async () => {
@@ -36,16 +30,20 @@ describe('RegisterService', () => {
 
   it('should be defined', () => {
     expect(registerService).toBeDefined();
-  })
+  });
 
   it('returns 400 when username is already taken', async () => {
+    await usersService.insertOne({ username: 'register_test', password: '1234567890' });
+
     await expect(
-      registerService.register({ username: 'test', password: '1234567890' })
+      registerService.register({ username: 'register_test', password: '1234567890' })
     ).rejects.toEqual(new BadRequestException(['This username is already taken']));
+
+    await usersService.deleteOne('register_test');
   });
 
   it('saves user to database', async () => {
-    const username = 'test2';
+    const username = 'register_test2';
     const password = '1234567890';
 
     await registerService.register({ username, password });
