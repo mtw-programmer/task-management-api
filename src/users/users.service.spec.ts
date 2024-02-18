@@ -14,8 +14,13 @@ describe('UsersService', () => {
 
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
+
+    await usersService.insertOne({ username: 'test', password: '1234567890' });
   });
 
+  afterEach(async () => {
+    await usersService.deleteOne('test');
+  });
 
   afterAll(async () => {
     await prismaService.$disconnect();
@@ -26,10 +31,13 @@ describe('UsersService', () => {
   });
 
   it('[insertOne]: should insert user', async () => {
-    const username = 'test';
+    const username = 'test2';
     const password = '1234567890';
 
     const res = await usersService.insertOne({ username, password });
+
+    await usersService.deleteOne(username);
+
     expect(res.username).toBe(username);
     expect(res.password).toBe(password);
   });
@@ -66,8 +74,13 @@ describe('UsersService', () => {
   });
 
   it('[deleteOne]: should delete user', async () => {
-    const res = await usersService.deleteOne('test');
-    expect(res.username).toBe('test');
+    const username = 'test2';
+    const password = '1234567890';
+
+    await usersService.insertOne({ username, password });
+
+    const res = await usersService.deleteOne(username);
+    expect(res.username).toBe(username);
   });
 
   it('[deleteOne]: should throw internal server error when no username', () => {
