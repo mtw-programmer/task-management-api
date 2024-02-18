@@ -35,7 +35,7 @@ describe('RegisterService', () => {
   it('returns 400 when username is already taken', async () => {
     await expect(
       registerService.register({ username: 'test', password: '1234567890' })
-    ).rejects.toEqual(new BadRequestException('This username is already taken'));
+    ).rejects.toEqual(new BadRequestException(['This username is already taken']));
   });
 
   it('saves user to database', async () => {

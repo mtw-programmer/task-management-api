@@ -16,7 +16,7 @@ export class RegisterService {
     const usernameExists = await this.usersService.exists(username);
 
     if (usernameExists) {
-      throw new BadRequestException('This username is already taken');
+      throw new BadRequestException(['This username is already taken']);
     }
 
     const hash = await argon2.hash(password);
