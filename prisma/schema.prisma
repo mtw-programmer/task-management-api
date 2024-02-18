@@ -37,7 +37,7 @@ model tag {
 model user {
   id           Int    @id @default(autoincrement())
   username     String @unique(map: "username") @db.VarChar(30)
-  password     String @db.Char(100)
+  password     String @db.VarChar(128)
   UsersToTasks task[] @relation("TasksToUsers")
   UsersToTags  tag[]  @relation("TagsToUsers")
 }
