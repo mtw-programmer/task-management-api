@@ -1,7 +1,7 @@
-import { Controller, Post, Res, Body, ValidationPipe } from '@nestjs/common'
-import { Response } from 'express'
-import { Register } from './register.validator'
-import { RegisterService } from './register.service'
+import { Controller, Post, Res, Body, ValidationPipe } from '@nestjs/common';
+import { Response } from 'express';
+import { Register } from './register.validator';
+import { RegisterService } from './register.service';
 
 @Controller('register')
 export class RegisterController {
