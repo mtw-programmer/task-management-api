@@ -33,8 +33,11 @@ export class RegisterController {
           example: 400,
         },
         message: {
-          type: 'string',
-          example: 'This username is already taken',
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'This username is already taken'
+          },
         },
         error: {
           type: 'string',
