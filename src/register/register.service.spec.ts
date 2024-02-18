@@ -7,7 +7,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('RegisterService', () => {
   let registerService: RegisterService;
-  let usersService:UsersService;
+  let usersService: UsersService;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,13 +21,18 @@ describe('RegisterService', () => {
 
     registerService = module.get<RegisterService>(RegisterService);
     usersService = module.get<UsersService>(UsersService);
+    prismaService = module.get<PrismaService>(PrismaService);
 
     await usersService.insertOne({ username: 'test', password: '1234567890' });
   })
 
   afterEach(async () => {
     await usersService.deleteOne('test');
-  })
+  });
+
+  afterAll(async () => {
+    await prismaService.$disconnect();
+  });
 
   it('should be defined', () => {
     expect(registerService).toBeDefined();
