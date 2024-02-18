@@ -32,19 +32,22 @@ describe('RegisterService', () => {
     expect(registerService).toBeDefined();
   })
 
-  it('returns 400 when username is already taken', () => {
-    expect(
+  it('returns 400 when username is already taken', async () => {
+    await expect(
       registerService.register({ username: 'test', password: '1234567890' })
     ).rejects.toEqual(new BadRequestException('This username is already taken'));
   });
 
   it('saves user to database', async () => {
-    await registerService.register({ username: 'test2', password: '1234567890' });
-    const res = await usersService.findOne('test2');
+    const username = 'test2';
+    const password = '1234567890';
 
-    await usersService.deleteOne('test2');
+    await registerService.register({ username, password });
+    const res = await usersService.findOne(username);
 
-    expect(res.username).toBe('test2');
-    expect(argon2.verify(res.password, '1234567890')).resolves.toBeTruthy();
+    await usersService.deleteOne(username);
+
+    expect(res.username).toBe(username);
+    expect(argon2.verify(res.password, password)).resolves.toBeTruthy();
   });
 });
