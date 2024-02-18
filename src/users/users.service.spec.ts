@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 describe('UsersService', () => {
   let usersService: UsersService;
   let prismaService: PrismaService;
+  const password = '1234567890';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,7 +16,7 @@ describe('UsersService', () => {
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
 
-    await usersService.insertOne({ username: 'users_test', password: '1234567890' });
+    await usersService.insertOne({ username: 'users_test', password });
   });
 
   afterEach(async () => {
@@ -32,7 +33,6 @@ describe('UsersService', () => {
 
   it('[insertOne]: should insert user', async () => {
     const username = 'users_test2';
-    const password = '1234567890';
 
     const res = await usersService.insertOne({ username, password });
 
@@ -44,7 +44,6 @@ describe('UsersService', () => {
 
   it('[insertOne]: should throw internal server error when duplicated username', () => {
     const username = 'users_test';
-    const password = '1234567890';
 
     expect(usersService.insertOne({ username, password })).rejects.toThrow(
       InternalServerErrorException
@@ -75,11 +74,9 @@ describe('UsersService', () => {
 
   it('[deleteOne]: should delete user', async () => {
     const username = 'users_test2';
-    const password = '1234567890';
-
     await usersService.insertOne({ username, password });
-
     const res = await usersService.deleteOne(username);
+    
     expect(res.username).toBe(username);
   });
 
