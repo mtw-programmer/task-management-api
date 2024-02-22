@@ -8,6 +8,8 @@ import { PrismaService } from './prisma/prisma.service';
 import { UsersService } from './users/users.service';
 import { RegisterService } from './register/register.service';
 import { RegisterController } from './register/register.controller';
+import { AuthController } from './auth/auth.controller';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { RegisterController } from './register/register.controller';
       typePaths: ['./**/*.graphql'],
     }),
   ],
-  controllers: [AppController, RegisterController],
-  providers: [AppService, PrismaService, UsersService, RegisterService],
+  controllers: [AppController, RegisterController, AuthController],
+  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService],
 })
 export class AppModule {}
