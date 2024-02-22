@@ -16,7 +16,7 @@ async function bootstrap() {
   const redisClient = createClient();
   redisClient.connect();
 
-  let redisStore = new RedisStore({
+  const redisStore = new RedisStore({
     client: redisClient,
     prefix: "tasks:",
   });
