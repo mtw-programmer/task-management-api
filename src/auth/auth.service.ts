@@ -16,7 +16,7 @@ export class AuthService {
 
     if (!await argon2.verify(user.password, password)) {
       this.logger.warn(`${username} failed to login`);
-      throw new BadRequestException('Invalid username or password');
+      throw new BadRequestException(['Invalid username or password']);
     }
 
     this.logger.log(`${username} logged in`);
