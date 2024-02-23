@@ -5,7 +5,8 @@ import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('AuthController', () => {
-  let controller: AuthController;
+  let authController: AuthController;
+  let authService: AuthService;
   let prismaService: PrismaService;
 
   beforeEach(async () => {
@@ -18,7 +19,8 @@ describe('AuthController', () => {
       ],
     }).compile();
 
-    controller = module.get<AuthController>(AuthController);
+    authController = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
@@ -27,6 +29,20 @@ describe('AuthController', () => {
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(authController).toBeDefined();
   });
+
+  it('should call authService.login and return the response', async () => {
+    const authData = { username: 'auth_test2', password: '1234567890' };
+    const responseMock: any = { send: jest.fn() } as any;
+    const sessionMock: Record<string, any> = { save: jest.fn().mockResolvedValueOnce(undefined) };
+
+    const authSpy = jest.spyOn(authService, 'login').mockResolvedValueOnce({ message: 'Successfully logged in' });
+    await authController.account(authData, sessionMock,responseMock);
+
+    expect(authSpy).toHaveBeenCalledWith(authData);
+
+    expect(sessionMock.user).toBe(authData.username);
+    expect(responseMock.send).toHaveBeenCalledWith({ message: 'Successfully logged in' });
+    });
 });
