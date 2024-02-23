@@ -34,15 +34,22 @@ describe('AuthController', () => {
 
   it('should call authService.login and return the response', async () => {
     const authData = { username: 'auth_test2', password: '1234567890' };
-    const responseMock: any = { send: jest.fn() } as any;
-    const sessionMock: Record<string, any> = { save: jest.fn().mockResolvedValueOnce(undefined) };
+    const responseMock: any = {
+      send: jest.fn(),
+    };
+    const sessionMock: Record<string, any> = {
+      user: undefined,
+      save: jest.fn().mockResolvedValueOnce(undefined),
+    };
 
     const authSpy = jest.spyOn(authService, 'login').mockResolvedValueOnce({ message: 'Successfully logged in' });
     await authController.account(authData, sessionMock,responseMock);
 
     expect(authSpy).toHaveBeenCalledWith(authData);
 
+    expect(sessionMock.save).toHaveBeenCalledTimes(1);
+
     expect(sessionMock.user).toBe(authData.username);
     expect(responseMock.send).toHaveBeenCalledWith({ message: 'Successfully logged in' });
-    });
+  });
 });
