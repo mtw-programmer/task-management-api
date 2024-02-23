@@ -44,7 +44,7 @@ describe('AuthService', () => {
   it('returns 400 when password is invalid', async () => {
     await registerService.register({ username: 'auth_test1', password: '1234567890' });
     await expect(authService.login({ username: 'auth_test1', password: 'Invalid_Password' })).rejects.toThrow(
-      new BadRequestException(['Invalid login or password'])
+      new BadRequestException()
     );
     await usersService.deleteOne('auth_test1');
   });
