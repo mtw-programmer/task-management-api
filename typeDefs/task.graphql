@@ -23,6 +23,6 @@ type Task {
 }
 
 type Query {
-  getTags(user_id: String!): [Tag]
-  getTasks(user_id: String!): [Task]
+  getTags: [Tag]
+  getTasks: [Task]
 }
