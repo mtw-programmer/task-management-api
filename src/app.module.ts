@@ -11,6 +11,7 @@ import { RegisterController } from './register/register.controller';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { GraphqlService } from './graphql/graphql.service';
+import { TasksService } from './tasks/tasks.service';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { GraphqlService } from './graphql/graphql.service';
     }),
   ],
   controllers: [AppController, RegisterController, AuthController],
-  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, GraphqlService],
+  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, GraphqlService, TasksService],
 })
 export class AppModule {}
