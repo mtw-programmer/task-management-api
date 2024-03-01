@@ -11,6 +11,7 @@ import { RegisterController } from './register/register.controller';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { TasksService } from './tasks/tasks.service';
+import { TasksResolver } from './tasks/tasks.resolver';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { TasksService } from './tasks/tasks.service';
     }),
   ],
   controllers: [AppController, RegisterController, AuthController],
-  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, TasksService],
+  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, TasksService, TasksResolver],
 })
 export class AppModule {}
