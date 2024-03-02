@@ -7,13 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model task {
+model Task {
   id           Int        @id @default(autoincrement())
   userId       Int
   title        String     @db.VarChar(50)
   details      String
   status       TaskStatus
-  TasksToUsers user       @relation("TasksToUsers", fields: [userId], references: [id])
+  TasksToUsers User       @relation("TasksToUsers", fields: [userId], references: [id])
 
   @@index([userId])
 }
@@ -26,18 +26,18 @@ enum TaskStatus {
   DONE
 }
 
-model tag {
+model Tag {
   id         Int    @id @default(autoincrement())
   userId     Int
   title      String
   color      String @db.VarChar(6)
-  TagsToUser user   @relation("TagsToUsers", fields: [userId], references: [id])
+  TagsToUser User   @relation("TagsToUsers", fields: [userId], references: [id])
 }
 
-model user {
+model User {
   id           Int    @id @default(autoincrement())
   username     String @unique(map: "username") @db.VarChar(30)
   password     String @db.VarChar(128)
-  UsersToTasks task[] @relation("TasksToUsers")
-  UsersToTags  tag[]  @relation("TagsToUsers")
+  UsersToTasks Task[] @relation("TasksToUsers")
+  UsersToTags  Tag[]  @relation("TagsToUsers")
 }

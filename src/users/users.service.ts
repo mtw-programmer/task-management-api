@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { user } from '@prisma/client';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -15,8 +15,8 @@ export class UsersService {
     const result = await this.prisma.user.findUnique({ where: { id } });
     return !!result;
   }
-
-  async findOne(username: string):Promise<user> {
+u
+  async findOne(username: string):Promise<User> {
     return await this.prisma.user
       .findUniqueOrThrow({
         where: { username }
@@ -26,7 +26,7 @@ export class UsersService {
       });
   }
 
-  async insertOne({ username, password }):Promise<user> {
+  async insertOne({ username, password }):Promise<User> {
     return await this.prisma.user
       .create({
         data: {
@@ -39,7 +39,7 @@ export class UsersService {
       });
   }
 
-  async deleteOne(username:string):Promise<user> {
+  async deleteOne(username:string):Promise<User> {
     return await
       this.prisma.user.delete({ where: { username } })
       .catch(() => {

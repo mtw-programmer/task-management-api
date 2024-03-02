@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException, UseGuards, ExecutionContext } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { task } from '@prisma/client';
+import { Task } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class TasksService {
     private readonly usersService: UsersService
   ) {}
 
-  async findOne(id: number):Promise<task> {
+  async findOne(id: number):Promise<Task> {
     return await this.prisma.task
       .findUniqueOrThrow({
         where: { id }
@@ -20,7 +20,7 @@ export class TasksService {
       });
   }
 
-  async getAll(req: any):Promise<task[]> {
+  async getAll(req: any):Promise<Task[]> {
     if (!req || !req.session.user || !this.usersService.idExists(req.session.user)) {
       throw new UnauthorizedException();
     }
