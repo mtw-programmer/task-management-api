@@ -17,6 +17,6 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    return this.usersService.exists(session.user);
+    return this.usersService.idExists(session.user);
   }
 }

@@ -13,7 +13,7 @@ export class RegisterService {
 
   async register({ username, password }: Register): Promise<any> {
 
-    const usernameExists = await this.usersService.exists(username);
+    const usernameExists = await this.usersService.usernameExists(username);
 
     if (usernameExists) {
       throw new BadRequestException(['This username is already taken']);

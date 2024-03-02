@@ -6,8 +6,13 @@ import { user } from '@prisma/client';
 export class UsersService {
   constructor (private prisma: PrismaService) {}
 
-  async exists(username: string):Promise<boolean> {
+  async usernameExists(username: string):Promise<boolean> {
     const result = await this.prisma.user.findUnique({ where: { username } });
+    return !!result;
+  }
+
+  async idExists(id: number):Promise<boolean> {
+    const result = await this.prisma.user.findUnique({ where: { id } });
     return !!result;
   }
 

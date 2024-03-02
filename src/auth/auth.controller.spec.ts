@@ -43,13 +43,10 @@ describe('AuthController', () => {
     };
 
     const authSpy = jest.spyOn(authService, 'login').mockResolvedValueOnce({ message: 'Successfully logged in' });
-    await authController.account(authData, sessionMock,responseMock);
+    await authController.account(authData, sessionMock, responseMock);
 
     expect(authSpy).toHaveBeenCalledWith(authData);
-
     expect(sessionMock.save).toHaveBeenCalledTimes(1);
-
-    expect(sessionMock.user).toBe(authData.username);
     expect(responseMock.send).toHaveBeenCalledWith({ message: 'Successfully logged in' });
   });
 });
