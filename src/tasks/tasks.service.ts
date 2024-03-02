@@ -21,7 +21,7 @@ export class TasksService {
   }
 
   async getAll(req: any):Promise<Task[]> {
-    if (!req || !req.session.user || !this.usersService.idExists(req.session.user)) {
+    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
       throw new UnauthorizedException();
     }
 
