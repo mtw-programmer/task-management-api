@@ -1,6 +1,6 @@
 type Tag {
   id: Int!
-  user_id: Int!
+  userId: Int!
   title: String!
   color: String!
 }
@@ -15,7 +15,7 @@ enum TaskStatus {
 
 type Task {
   id: Int!
-  user_id: Int!
+  userId: Int!
   title: String!
   details: String!
   status: TaskStatus!
