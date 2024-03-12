@@ -10,10 +10,14 @@ export class TasksService {
     private readonly usersService: UsersService
   ) {}
 
-  async findOne(id: number):Promise<Task> {
+  async findOne(req: any, id: number):Promise<Task> {
+    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
+      throw new UnauthorizedException();
+    }
+
     return await this.prisma.task
       .findUniqueOrThrow({
-        where: { id }
+        where: { id, userId: req.session.user }
       })
       .catch(() => {
         throw new NotFoundException();
