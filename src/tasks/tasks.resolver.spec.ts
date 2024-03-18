@@ -7,6 +7,7 @@ import { UsersService } from 'src/users/users.service';
 
 describe('TasksResolver', () => {
   let resolver: TasksResolver;
+  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,6 +23,7 @@ describe('TasksResolver', () => {
     }).compile();
 
     resolver = module.get<TasksResolver>(TasksResolver);
+    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterAll(async () => {
