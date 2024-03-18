@@ -45,6 +45,17 @@ describe('TasksResolver', () => {
     expect(resolver).toBeDefined();
   });
 
+  it('returns task with given id', async () => {
+    const task: Task = { id: 1, userId: 1, title: 'Task 1', details: 'details', status: 'BACKLOG' };
+
+    jest.spyOn(tasksService, 'findOne').mockResolvedValue(task);
+
+    const ctx = createContext({ req: { session: { user: 1 } } });
+
+    const res = await resolver.getTask(ctx, 1);
+    expect(res).toEqual(task);
+  });
+
   it('returns all tasks', async () => {
     const tasks: Task[] = [
       { id: 1, userId: 1, title: 'Task 1', details: 'details', status: 'BACKLOG' },
