@@ -3,7 +3,7 @@ import { TasksService } from './tasks.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterService } from 'src/register/register.service';
-import { UnauthorizedException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 describe('TasksService', () => {
@@ -37,5 +37,25 @@ describe('TasksService', () => {
 
   it('should be defined', () => {
     expect(tasksService).toBeDefined();
+  });
+
+  it('throws 401 when user is not authenticated', async () => {
+    const req = undefined;
+    await expect(tasksService.findOne(req, 1)).rejects.toThrow(UnauthorizedException);
+    await expect(tasksService.getAll(req)).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('throws 401 when user id not found', async () => {
+    const req = { session: { user: 1 } };
+    usersService.idExists = jest.fn().mockResolvedValue(false);
+    await expect(tasksService.findOne(req, 1)).rejects.toThrow(UnauthorizedException);
+    await expect(tasksService.getAll(req)).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('throws 404 when task id not found', async () => {
+    const req = { session: { user: 1 } };
+    usersService.idExists = jest.fn().mockResolvedValue(true);
+    // No 0 ID in db, so rejects
+    await expect(tasksService.findOne(req, 0)).rejects.toThrow(NotFoundException);
   });
 });
