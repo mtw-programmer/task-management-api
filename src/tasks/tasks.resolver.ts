@@ -10,6 +10,13 @@ export class TasksResolver {
 
   @Query()
   @UseGuards(AuthGuard)
+  async getTask(@Context() context: { req: Request }, id: number):Promise<Task> {
+    const { req } = context;
+    return await this.tasksService.findOne(req, id);
+  }
+  
+  @Query()
+  @UseGuards(AuthGuard)
   async getTasks(@Context() context: { req: Request }):Promise<Task[]> {
     const { req } = context;
     return await this.tasksService.getAll(req);
