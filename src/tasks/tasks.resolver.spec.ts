@@ -45,7 +45,7 @@ describe('TasksResolver', () => {
     expect(resolver).toBeDefined();
   });
 
-  it('returns task with given id', async () => {
+  it('returns task with the given id', async () => {
     const task: Task = { id: 1, userId: 1, title: 'Task 1', details: 'details', status: 'BACKLOG' };
 
     jest.spyOn(tasksService, 'findOne').mockResolvedValue(task);
