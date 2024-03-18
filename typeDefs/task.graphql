@@ -24,5 +24,6 @@ type Task {
 
 type Query {
   getTags: [Tag]
+  getTask: Task
   getTasks: [Task]
 }
