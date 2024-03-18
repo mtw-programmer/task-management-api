@@ -6,6 +6,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 describe('UsersService', () => {
   let usersService: UsersService;
   let prismaService: PrismaService;
+  let id:number = 0;
   const password = '1234567890';
 
   beforeEach(async () => {
@@ -16,7 +17,8 @@ describe('UsersService', () => {
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
 
-    await usersService.insertOne({ username: 'users_test', password });
+    const res = await usersService.insertOne({ username: 'users_test', password });
+    id = res.id;
   });
 
   afterEach(async () => {
@@ -50,13 +52,23 @@ describe('UsersService', () => {
     );
   });
 
-  it('[exists]: should return false when no user', async () => {
-    const res = await usersService.exists('404');
+  it('[idExists]: should return false when no user', async () => {
+    const res = await usersService.idExists(404);
     expect(res).toBeFalsy();
   });
 
-  it('[exists]: should return true when user exists', async () => {
-    const res = await usersService.exists('users_test');
+  it('[idExists]: should return true when user exists', async () => {
+    const res = await usersService.idExists(id);
+    expect(res).toBeTruthy();
+  });
+
+  it('[usernameExists]: should return false when no user', async () => {
+    const res = await usersService.usernameExists('404');
+    expect(res).toBeFalsy();
+  });
+
+  it('[usernameExists]: should return true when user exists', async () => {
+    const res = await usersService.usernameExists('users_test');
     expect(res).toBeTruthy();
   });
 

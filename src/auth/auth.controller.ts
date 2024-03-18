@@ -21,11 +21,11 @@ export class AuthController {
     @Session() session: Record<string, any>,
     @Res() res: Response,
   ) {
-    const { message } = await this.authService.login(
+    const { userId, message } = await this.authService.login(
       Auth
     );
 
-    session.user = Auth.username;
+    session.user = userId;
     await session.save();
 
     return res.send({

@@ -20,6 +20,6 @@ export class AuthService {
     }
 
     this.logger.log(`${username} logged in`);
-    return { message: 'Successfully logged in' };
+    return { userId: user.id, message: 'Successfully logged in' };
   }
 }

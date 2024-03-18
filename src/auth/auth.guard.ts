@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
 import { Observable } from 'rxjs';
 import { UsersService } from 'src/users/users.service';
 
@@ -7,16 +8,16 @@ export class AuthGuard implements CanActivate {
   constructor (private readonly usersService: UsersService) {}
 
   canActivate(
-    context: ExecutionContext,
+    ctx: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     
-    const request = context.switchToHttp().getRequest();
-    const session = request.session;
+    const context = GqlExecutionContext.create(ctx);
+    const request = context.getContext().req;
 
-    if (!session || !session?.user) {
+    if (!request.session || !request.session?.user) {
       return false;
     }
 
-    return this.usersService.exists(session.user);
+    return this.usersService.idExists(request.session?.user);
   }
 }

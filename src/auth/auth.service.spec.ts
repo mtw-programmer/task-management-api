@@ -37,7 +37,7 @@ describe('AuthService', () => {
 
   it('returns 404 when user was not found', async () => {
     expect(authService.login({ username: '404', password: '1234567890' })).rejects.toThrow(
-      new NotFoundException()
+      NotFoundException
     );
   });
 

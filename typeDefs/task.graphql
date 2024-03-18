@@ -1,0 +1,29 @@
+type Tag {
+  id: Int!
+  userId: Int!
+  title: String!
+  color: String!
+}
+
+enum TaskStatus {
+  BACKLOG
+  READY
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+
+type Task {
+  id: Int!
+  userId: Int!
+  title: String!
+  details: String!
+  status: TaskStatus!
+  tag: [Tag]
+}
+
+type Query {
+  getTags: [Tag]
+  getTask: Task
+  getTasks: [Task]
+}
