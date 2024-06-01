@@ -29,7 +29,7 @@ enum TaskStatus {
 model Tag {
   id         Int    @id @default(autoincrement())
   userId     Int
-  title      String
+  title      String @db.VarChar(30)
   color      String @db.VarChar(6)
   TagsToUser User   @relation("TagsToUsers", fields: [userId], references: [id])
 }
