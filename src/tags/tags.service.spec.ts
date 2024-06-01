@@ -42,49 +42,79 @@ describe('TagsService', () => {
     const req = undefined;
     await expect(tagsService.findOne(req, 1)).rejects.toThrow(UnauthorizedException);
     await expect(tagsService.getAll(req)).rejects.toThrow(UnauthorizedException);
+    await expect(tagsService.create(req, { title: 'Tag 1', color: 'ff0000' })).rejects.toThrow(UnauthorizedException);
   });
 
-  it('throws 401 when user id not found', async () => {
-    const req = { session: { user: 1 } };
-    usersService.idExists = jest.fn().mockResolvedValue(false);
-    await expect(tagsService.findOne(req, 1)).rejects.toThrow(UnauthorizedException);
-    await expect(tagsService.getAll(req)).rejects.toThrow(UnauthorizedException);
+  describe('Getters', () => {
+    it('throws 401 when user id not found', async () => {
+      const req = { session: { user: 1 } };
+      usersService.idExists = jest.fn().mockResolvedValue(false);
+      await expect(tagsService.findOne(req, 1)).rejects.toThrow(UnauthorizedException);
+      await expect(tagsService.getAll(req)).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throws 404 when tag id not found', async () => {
+      const req = { session: { user: 1 } };
+      usersService.idExists = jest.fn().mockResolvedValue(true);
+      // No 0 ID in db, so rejects
+      await expect(tagsService.findOne(req, 0)).rejects.toThrow(NotFoundException);
+    });
+
+    it('returns tag with the given id for authenticated user', async () => {
+      const req = { session: { user: 1 } };
+      usersService.idExists = jest.fn().mockResolvedValue(true);
+
+      const tag: Tag = { id: 1, userId: 1, title: 'Tag 1', color: 'ff0000' };
+
+      const findOneSpy = jest.spyOn(tagsService['prisma'].tag, 'findUniqueOrThrow').mockResolvedValue(tag);
+      const res = await tagsService.findOne(req, 1);
+
+      expect(res).toEqual(tag);
+      expect(findOneSpy).toHaveBeenCalledWith({ where: { id: 1, userId: 1 } });
+    });
+
+    it('returns all tags for authenticated user', async () => {
+      const req = { session: { user: 1 } };
+      usersService.idExists = jest.fn().mockResolvedValue(true);
+
+      const tags: Tag[] = [
+        { id: 1, userId: 1, title: 'Tag 1', color: 'ff0000' },
+        { id: 2, userId: 1, title: 'Tag 2', color: '0000ff' },
+      ];
+
+      const findOneSpy = jest.spyOn(tagsService['prisma'].tag, 'findMany').mockResolvedValue(tags);
+      const res = await tagsService.getAll(req);
+
+      expect(res).toEqual(tags);
+      expect(findOneSpy).toHaveBeenCalledWith({ where: { userId: 1 } });
+    });
   });
 
-  it('throws 404 when tag id not found', async () => {
-    const req = { session: { user: 1 } };
-    usersService.idExists = jest.fn().mockResolvedValue(true);
-    // No 0 ID in db, so rejects
-    await expect(tagsService.findOne(req, 0)).rejects.toThrow(NotFoundException);
-  });
+  describe('Create', () => {
+    it('creates tag', async () => {
+      const req = { session: { user: 1 } };
 
-  it('returns tag with the given id for authenticated user', async () => {
-    const req = { session: { user: 1 } };
-    usersService.idExists = jest.fn().mockResolvedValue(true);
+      const tagData = {
+        id: 1,
+        userId: 1,
+        title: 'Tag 1',
+        color: 'ff0000',
+      };
 
-    const tag: Tag = { id: 1, userId: 1, title: 'Tag 1', color: 'ff0000' };
+      jest.spyOn(usersService, 'idExists').mockResolvedValue(true);
+      jest.spyOn(prismaService.tag, 'create').mockResolvedValue(tagData as Tag);
 
-    const findOneSpy = jest.spyOn(tagsService['prisma'].tag, 'findUniqueOrThrow').mockResolvedValue(tag);
-    const res = await tagsService.findOne(req, 1);
+      jest.spyOn(prismaService.tag, 'findUniqueOrThrow').mockResolvedValue(tagData as Tag);
 
-    expect(res).toEqual(tag);
-    expect(findOneSpy).toHaveBeenCalledWith({ where: { id: 1, userId: 1 } });
-  });
+      const tag = { title: 'Tag 1', color: 'ff0000' };
+      const { tagId } = await tagsService.create(req, tag);
 
-  it('returns all tags for authenticated user', async () => {
-    const req = { session: { user: 1 } };
-    usersService.idExists = jest.fn().mockResolvedValue(true);
+      const savedTag = await tagsService.findOne(req, tagId);
 
-    const tags: Tag[] = [
-      
-      { id: 1, userId: 1, title: 'Tag 1', color: 'ff0000' },
-      { id: 2, userId: 1, title: 'Tag 2', color: '0000ff' },
-    ];
+      const containsProperties = (obj: object, target: object): boolean =>
+        Object.keys(target).every(key => obj[key] === target[key]);
 
-    const findOneSpy = jest.spyOn(tagsService['prisma'].tag, 'findMany').mockResolvedValue(tags);
-    const res = await tagsService.getAll(req);
-
-    expect(res).toEqual(tags);
-    expect(findOneSpy).toHaveBeenCalledWith({ where: { userId: 1 } });
+      expect(containsProperties(savedTag, tag)).toBeTruthy();
+    });
   });
 });
