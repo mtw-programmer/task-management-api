@@ -12,6 +12,9 @@ import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { TasksService } from './tasks/tasks.service';
 import { TasksResolver } from './tasks/tasks.resolver';
+import { TagsService } from './tags/tags.service';
+import { TagsController } from './tags/tags.controller';
+import { TagsResolver } from './tags/tags.resolver';
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { TasksResolver } from './tasks/tasks.resolver';
       typePaths: ['./**/*.graphql'],
     }),
   ],
-  controllers: [AppController, RegisterController, AuthController],
-  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, TasksService, TasksResolver],
+  controllers: [AppController, RegisterController, AuthController, TagsController],
+  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, TasksService, TasksResolver, TagsService, TagsResolver],
 })
 export class AppModule {}
