@@ -13,7 +13,7 @@ export class TagsController {
     @Body(new ValidationPipe()) Tag: Tag,
     @Res() res: Response,
   ) {
-    const { message } = await this.tagsService.create(req, Tag);
-    return res.send({ message });
+    const { message, tagId } = await this.tagsService.create(req, Tag);
+    return res.send({ message, tagId });
   }
 }
