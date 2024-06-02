@@ -23,6 +23,7 @@ type Task {
 }
 
 type Query {
+  getTag: [Tag]
   getTags: [Tag]
   getTask: Task
   getTasks: [Task]
