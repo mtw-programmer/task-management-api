@@ -9,6 +9,6 @@ export class Tag {
 
   @ApiProperty({ minLength: 6, maxLength: 6 })
   @IsString()
-  @Length(6)
+  @Length(6, 6)
   color: string;
 }
