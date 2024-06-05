@@ -13,6 +13,7 @@ model Task {
   title        String     @db.VarChar(50)
   details      String
   status       TaskStatus
+  tags         TaskTag[]
   TasksToUsers User       @relation("TasksToUsers", fields: [userId], references: [id])
 
   @@index([userId])
@@ -27,11 +28,12 @@ enum TaskStatus {
 }
 
 model Tag {
-  id         Int    @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   userId     Int
-  title      String @db.VarChar(30)
-  color      String @db.VarChar(6)
-  TagsToUser User   @relation("TagsToUsers", fields: [userId], references: [id])
+  title      String    @db.VarChar(30)
+  color      String    @db.VarChar(6)
+  TagsToUser User      @relation("TagsToUsers", fields: [userId], references: [id])
+  tasks      TaskTag[]
 }
 
 model User {
@@ -40,4 +42,15 @@ model User {
   password     String @db.VarChar(128)
   UsersToTasks Task[] @relation("TasksToUsers")
   UsersToTags  Tag[]  @relation("TagsToUsers")
+}
+
+model TaskTag {
+  taskId Int
+  tagId  Int
+  task   Task @relation(fields: [taskId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
+  @@id([taskId, tagId])
+  @@index([taskId])
+  @@index([tagId])
 }
