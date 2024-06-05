@@ -6,9 +6,12 @@ import { RegisterService } from 'src/register/register.service';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Task } from '@prisma/client';
+import NewTask from './NewTask.interface';
+import { TagsService } from 'src/tags/tags.service';
 
 describe('TasksService', () => {
   let tasksService: TasksService;
+  let tagsService: TagsService;
   let usersService: UsersService;
   let prismaService: PrismaService;
 
@@ -16,6 +19,7 @@ describe('TasksService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TasksService,
+        TagsService,
         UsersService,
         PrismaService,
         RegisterService
@@ -26,6 +30,7 @@ describe('TasksService', () => {
     }).compile();
 
     tasksService = module.get<TasksService>(TasksService);
+    tagsService = module.get<TagsService>(TagsService);
     usersService = module.get<UsersService>(UsersService);
     prismaService = module.get<PrismaService>(PrismaService);
   });
@@ -86,6 +91,45 @@ describe('TasksService', () => {
   
       expect(res).toEqual(tasks);
       expect(findOneSpy).toHaveBeenCalledWith({ where: { userId: 1 } });
+    });
+  });
+
+  describe('Create', () => {
+    it('returns 400 when invalid tag id given', async () => {
+      const req: Request = { session: { user: 1 } } as unknown as Request;
+      usersService.idExists = jest.fn().mockResolvedValue(true);
+
+      const task: NewTask = { title: 'Task 1', details: 'Details', tags: [1, 2, 3] };
+
+      tagsService.idExists = jest.fn().mockImplementation(async (tagId) => {
+        return [1, 2].includes(tagId);
+      });
+
+      let response;
+
+      try {
+        response = await tasksService.createTask(req, task);
+      } catch (ex) {
+        response = ex.response;
+      }
+
+      expect(response.statusCode).toBe(400);
+    });
+    
+    it('creates task', async () => {
+      const req = { session: { user: 1 } };
+      usersService.idExists = jest.fn().mockResolvedValue(true);
+
+      const task: NewTask = { title: 'Task 1', details: 'Details', tags: [1] };
+
+      const response = await tasksService.createTask(req, task);
+
+      const savedTask = await tasksService.findOne(req, response.id);
+
+      const containsProperties = (obj: object, target: object): boolean =>
+        Object.keys(target).every(key => obj[key] === target[key]);
+
+      expect(containsProperties(task, savedTask)).toBeTruthy();
     });
   });
 });
