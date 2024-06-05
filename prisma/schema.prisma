@@ -11,7 +11,7 @@ model Task {
   id           Int        @id @default(autoincrement())
   userId       Int
   title        String     @db.VarChar(50)
-  details      String
+  details      String?    @db.VarChar(2000)
   status       TaskStatus
   tags         TaskTag[]
   TasksToUsers User       @relation("TasksToUsers", fields: [userId], references: [id])
