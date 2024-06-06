@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Task } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
@@ -42,7 +42,17 @@ export class TasksService {
 
     const { title, details, tags } = task;
 
-    // Check if tags exist
+    const tagsExists = async function (tagsArray: number[]):Promise<boolean> {
+      const foundTags = await this.prisma.tag.findMany({
+        where: { tag: { in: tagsArray } }
+      });
+
+      return foundTags.length === tagsArray.length;
+    };
+
+    if (!await tagsExists(tags)) {
+      throw new BadRequestException(['Invalid tags']);
+    }
 
     return await this.prisma.task
       .create({
