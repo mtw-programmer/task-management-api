@@ -3,6 +3,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Task } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
 
+const validateAuthorization = async (req: any, usersService: UsersService) => {
+  if (!req || !req.session.user || !await usersService.idExists(req.session.user)) {
+    throw new UnauthorizedException();
+  }
+}
+
 @Injectable()
 export class TasksService {
   constructor (
@@ -11,9 +17,7 @@ export class TasksService {
   ) {}
 
   async findOne(req: any, id: number):Promise<Task> {
-    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
-      throw new UnauthorizedException();
-    }
+    await validateAuthorization(req, this.usersService);
 
     return await this.prisma.task
       .findUniqueOrThrow({
@@ -25,9 +29,7 @@ export class TasksService {
   }
 
   async getAll(req: any):Promise<Task[]> {
-    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
-      throw new UnauthorizedException();
-    }
+    await validateAuthorization(req, this.usersService);
 
     return await this.prisma.task
       .findMany({ where: { userId: req.session.user } })
