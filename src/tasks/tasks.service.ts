@@ -2,13 +2,8 @@ import { Injectable, NotFoundException, InternalServerErrorException, Unauthoriz
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Task } from '@prisma/client';
 import { UsersService } from 'src/users/users.service';
+import validateAuthorization from 'src/common/utils/validateAuthorization';
 import NewTask from './NewTask.interface';
-
-const validateAuthorization = async (req: any, usersService: UsersService) => {
-  if (!req || !req.session.user || !await usersService.idExists(req.session.user)) {
-    throw new UnauthorizedException();
-  }
-}
 
 @Injectable()
 export class TasksService {

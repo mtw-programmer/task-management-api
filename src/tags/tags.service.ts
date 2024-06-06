@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { Tag } from '@prisma/client';
 import { Tag as TagValidator } from './tags.validator';
 import { UsersService } from 'src/users/users.service';
+import validateAuthorization from 'src/common/utils/validateAuthorization';
 
 @Injectable()
 export class TagsService {
@@ -12,9 +13,7 @@ export class TagsService {
   ) {}
 
   async findOne(req: any, id: number):Promise<Tag> {
-    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
-      throw new UnauthorizedException();
-    }
+    await validateAuthorization(req, this.usersService);
 
     return await this.prisma.tag
       .findUniqueOrThrow({
@@ -26,9 +25,7 @@ export class TagsService {
   }
 
   async getAll(req: any):Promise<Tag[]> {
-    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
-      throw new UnauthorizedException();
-    }
+    await validateAuthorization(req, this.usersService);
 
     return await this.prisma.tag
       .findMany({ where: { userId: req.session.user } })
@@ -36,9 +33,7 @@ export class TagsService {
   }
 
   async create(req: any, tag: TagValidator): Promise<any> {
-    if (!req || !req.session.user || !await this.usersService.idExists(req.session.user)) {
-      throw new UnauthorizedException();
-    }
+    await validateAuthorization(req, this.usersService);
 
     const userExists = await this.usersService.idExists(req.session.user);
     if (!userExists) {
