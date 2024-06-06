@@ -12,6 +12,11 @@ export class TagsService {
     private readonly usersService: UsersService
   ) {}
 
+  async idExists(req: any, id: number):Promise<boolean> {
+    const result = await this.prisma.tag.findUnique({ where: { userId: req.session.user, id } });
+    return !!result;
+  }
+
   async findOne(req: any, id: number):Promise<Tag> {
     await validateAuthorization(req, this.usersService);
 
