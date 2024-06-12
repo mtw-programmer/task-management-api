@@ -17,6 +17,11 @@ export class TagsService {
     return !!result;
   }
 
+  async areTagsValid(req: any, tags: number[]):Promise<boolean> {
+    const result = await this.prisma.tag.findMany({ where: { userId: req.session.user, id: { in: tags } } });
+    return result.length === tags.length;
+  }
+
   async findOne(req: any, id: number):Promise<Tag> {
     await validateAuthorization(req, this.usersService);
 
@@ -39,11 +44,6 @@ export class TagsService {
 
   async create(req: any, tag: TagValidator): Promise<any> {
     await validateAuthorization(req, this.usersService);
-
-    const userExists = await this.usersService.idExists(req.session.user);
-    if (!userExists) {
-      throw new UnauthorizedException('User does not exist');
-    }
 
     try {
       const newTag = await this.prisma.tag.create({
