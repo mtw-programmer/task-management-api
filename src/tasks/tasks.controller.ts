@@ -17,7 +17,7 @@ export class TasksController {
     @Body(new ValidationPipe()) Task: Task,
     @Res() res: Response,
   ) {
-    const { id } = await this.tasksService.create(req, Task as TaskValidator);
-    return res.send({ id });
+    const { taskId, message } = await this.tasksService.create(req, Task as TaskValidator);
+    return res.json({ taskId, message });
   }
 }
