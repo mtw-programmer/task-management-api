@@ -3,10 +3,10 @@ import { TasksService } from './tasks.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterService } from 'src/register/register.service';
-import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Task } from '@prisma/client';
-import NewTask from './NewTask.interface';
+import { Task, Tag } from '@prisma/client';
+import { Task as TaskValidator } from './tasks.validator';
 import { TagsService } from 'src/tags/tags.service';
 
 describe('TasksService', () => {
@@ -97,34 +97,29 @@ describe('TasksService', () => {
   describe('Create', () => {
     it('returns 400 when invalid tag id given', async () => {
       const req: Request = { session: { user: 1 } } as unknown as Request;
-      usersService.idExists = jest.fn().mockResolvedValue(true);
+      jest.spyOn(usersService, 'idExists').mockResolvedValue(true);
+      jest.spyOn(tagsService, 'areTagsValid').mockResolvedValue(false);
 
-      const task: NewTask = { title: 'Task 1', details: 'Details', tags: [1, 2, 3] };
+      const task: TaskValidator = { title: 'Task 1', details: 'Details', tags: [1, 2, 3] };
 
-      tagsService.idExists = jest.fn().mockImplementation(async (tagId) => {
-        return [1, 2].includes(tagId);
-      });
-
-      let response;
-
-      try {
-        response = await tasksService.createTask(req, task);
-      } catch (ex) {
-        response = ex.response;
-      }
-
-      expect(response.statusCode).toBe(400);
+      await expect(tasksService.create(req, task)).rejects.toThrow(BadRequestException);
     });
     
     it('creates task', async () => {
       const req = { session: { user: 1 } };
-      usersService.idExists = jest.fn().mockResolvedValue(true);
+      jest.spyOn(usersService, 'idExists').mockResolvedValue(true);
+      jest.spyOn(tagsService, 'areTagsValid').mockResolvedValue(true);
 
-      const task: NewTask = { title: 'Task 1', details: 'Details', tags: [1] };
+      const tagId = 1;
+      const task: TaskValidator = { title: 'Task 1', details: 'Details', tags: [tagId] };
 
-      const response = await tasksService.createTask(req, task);
+      const createdTask = { id: 1, userId: 1, title: 'Task 1', details: 'Details', status: 'BACKLOG', tags: [] };
 
-      const savedTask = await tasksService.findOne(req, response.id);
+      jest.spyOn(tasksService['prisma'].task, 'create').mockResolvedValue(createdTask as any);
+
+      const response = await tasksService.create(req, task);
+
+      const savedTask = await tasksService.findOne(req, response.taskId);
 
       const containsProperties = (obj: object, target: object): boolean =>
         Object.keys(target).every(key => obj[key] === target[key]);
