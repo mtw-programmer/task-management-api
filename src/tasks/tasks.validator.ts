@@ -1,7 +1,7 @@
 import { IsArray, IsNumber, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class Tag {
+export class Task {
   @ApiProperty({ minLength: 1, maxLength: 50 })
   @IsString()
   @Length(1, 50)
