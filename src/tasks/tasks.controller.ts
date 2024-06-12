@@ -14,10 +14,10 @@ export class TasksController {
   @ApiOperation({ summary: 'Create new task' })
   async create(
     @Req() req: Request,
-    @Body(new ValidationPipe()) Task: Task,
+    @Body(new ValidationPipe()) Task: TaskValidator,
     @Res() res: Response,
   ) {
-    const { taskId, message } = await this.tasksService.create(req, Task as TaskValidator);
+    const { taskId, message } = await this.tasksService.create(req, Task);
     return res.json({ taskId, message });
   }
 }
