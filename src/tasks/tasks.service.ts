@@ -1,15 +1,17 @@
 import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Task } from '@prisma/client';
+import { Task as TaskValidator } from './tasks.validator';
 import { UsersService } from 'src/users/users.service';
 import validateAuthorization from 'src/common/utils/validateAuthorization';
-import NewTask from './NewTask.interface';
+import { TagsService } from 'src/tags/tags.service';
 
 @Injectable()
 export class TasksService {
   constructor (
     private readonly prisma: PrismaService,
-    private readonly usersService: UsersService
+    private readonly usersService: UsersService,
+    private readonly tagsService: TagsService
   ) {}
 
   async findOne(req: any, id: number):Promise<Task> {
@@ -32,33 +34,30 @@ export class TasksService {
       .catch(() => { throw new InternalServerErrorException() });
   }
 
-  async createTask(req: any, task: NewTask):Promise<Task> {
+  async create(req: any, task: TaskValidator): Promise<any> {
     await validateAuthorization(req, this.usersService);
 
     const { title, details, tags } = task;
 
-    const tagsExists = async function (tagsArray: number[]):Promise<boolean> {
-      const foundTags = await this.prisma.tag.findMany({
-        where: { tag: { in: tagsArray } }
-      });
-
-      return foundTags.length === tagsArray.length;
-    };
-
-    if (!await tagsExists(tags)) {
+    if (!await this.tagsService.areTagsValid(req, tags)) {
       throw new BadRequestException(['Invalid tags']);
     }
 
-    return await this.prisma.task
-      .create({
+    try {
+      const newTask = await this.prisma.task.create({
         data: {
-          userId: req.session.userId,
+          userId: req.session.user,
           title,
           details,
           status: 'BACKLOG',
           tags: { connect: tags.map((tagId) => ({ id: tagId })) as any }
         }
-      })
-      .catch(() => { throw new InternalServerErrorException() });
+      });
+
+      return { taskId: newTask.id, message: 'Successfully created a new task' };
+    } catch (error) {
+      console.error('Error creating tag:', error);
+      throw new InternalServerErrorException('Failed to create tag');
+    }
   }
 }
