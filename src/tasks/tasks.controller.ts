@@ -2,7 +2,6 @@ import { Controller, Post, Body, ValidationPipe, Res, Req } from '@nestjs/common
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { TasksService } from './tasks.service';
-import { Task } from './tasks.validator';
 import { Task as TaskValidator } from './tasks.validator';
 
 @Controller('tasks')
