@@ -50,7 +50,9 @@ export class TasksService {
           title,
           details,
           status: 'BACKLOG',
-          tags: { connect: tags.map((tagId) => ({ id: tagId })) as any }
+          tags: {
+            create: tags.map(tagId => ({ tagId })) as any
+          }
         }
       });
 
