@@ -17,7 +17,7 @@ type Task {
   id: Int!
   userId: Int!
   title: String!
-  details: String!
+  details: String
   status: TaskStatus!
   tag: [Tag]
 }
