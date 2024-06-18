@@ -10,12 +10,10 @@ import { RegisterService } from './register/register.service';
 import { RegisterController } from './register/register.controller';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
-import { TasksService } from './tasks/tasks.service';
-import { TasksResolver } from './tasks/tasks.resolver';
 import { TagsService } from './tags/tags.service';
 import { TagsController } from './tags/tags.controller';
 import { TagsResolver } from './tags/tags.resolver';
-import { TasksController } from './tasks/tasks.controller';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -24,8 +22,9 @@ import { TasksController } from './tasks/tasks.controller';
       driver: ApolloDriver,
       typePaths: ['./**/*.graphql'],
     }),
+    TasksModule,
   ],
-  controllers: [AppController, RegisterController, AuthController, TagsController, TasksController],
-  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, TasksService, TasksResolver, TagsService, TagsResolver],
+  controllers: [AppController, RegisterController, AuthController, TagsController],
+  providers: [AppService, PrismaService, UsersService, RegisterService, AuthService, TagsService, TagsResolver],
 })
 export class AppModule {}
