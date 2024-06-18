@@ -51,7 +51,7 @@ export class TasksService {
           details,
           status: 'BACKLOG',
           tags: {
-            create: tags.map(tagId => ({ tagId })) as any
+            create: tags.map(tagId => ({ tagId }))
           }
         }
       });
