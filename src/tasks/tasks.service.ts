@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Task } from '@prisma/client';
 import { Task as TaskValidator } from './tasks.validator';
@@ -58,7 +58,7 @@ export class TasksService {
 
       return { taskId: newTask.id, message: 'Successfully created a new task' };
     } catch (error) {
-      console.error('Error creating tag:', error);
+      Logger.error('Error creating a task: ', error);
       throw new InternalServerErrorException('Failed to create tag');
     }
   }
