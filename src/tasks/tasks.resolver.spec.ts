@@ -36,10 +36,6 @@ describe('TasksResolver', () => {
     prismaService = module.get<PrismaService>(PrismaService);
   });
 
-  afterAll(async () => {
-    await prismaService.$disconnect();
-  });
-
   it('should be defined', () => {
     expect(resolver).toBeDefined();
   });
