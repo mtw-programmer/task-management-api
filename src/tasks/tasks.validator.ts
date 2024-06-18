@@ -1,4 +1,4 @@
-import { IsArray, IsNumber, IsString, Length } from 'class-validator';
+import { IsArray, IsOptional, IsNumber, IsString, Length } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class Task {
@@ -9,6 +9,7 @@ export class Task {
 
   @ApiProperty({ minLength: 1, maxLength: 2000 })
   @IsString()
+  @IsOptional()
   @Length(1, 2000)
   details?: string;
   
@@ -17,6 +18,7 @@ export class Task {
     description: 'Array of tag IDs'
   })
   @IsArray()
+  @IsOptional()
   @IsNumber({}, { each: true, message: 'All elements must be tag IDs' })
   tags?: number[];
 }
