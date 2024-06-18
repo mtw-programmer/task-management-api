@@ -3,7 +3,7 @@ import { TasksService } from './tasks.service';
 import { UsersService } from 'src/users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterService } from 'src/register/register.service';
-import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, UnauthorizedException, InternalServerErrorException } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Task, Tag } from '@prisma/client';
 import { Task as TaskValidator } from './tasks.validator';
@@ -104,6 +104,28 @@ describe('TasksService', () => {
 
       await expect(tasksService.create(req, task)).rejects.toThrow(BadRequestException);
     });
+
+    it('throws 400 when tags are invalid', async () => {
+      const req = { session: { user: 1 } };
+      jest.spyOn(usersService, 'idExists').mockResolvedValue(true);
+      const taskValidator = { title: 'New Task', details: 'Task details', tags: [1, 2] };
+  
+      jest.spyOn(tagsService, 'areTagsValid').mockResolvedValue(false);
+  
+      await expect(tasksService.create(req, taskValidator)).rejects.toThrow(new BadRequestException(['Invalid tags']));
+    });
+  
+    it('should throw InternalServerErrorException on database error', async () => {
+      const req = { session: { user: 1 } };
+      jest.spyOn(usersService, 'idExists').mockResolvedValue(true);
+      const taskValidator = { title: 'New Task', details: 'Task details', tags: [1, 2] };
+  
+      jest.spyOn(tagsService, 'areTagsValid').mockResolvedValue(true);
+      jest.spyOn(prismaService.task, 'create').mockRejectedValue(new Error('Database error'));
+  
+      await expect(tasksService.create(req, taskValidator)).rejects.toThrow(InternalServerErrorException);
+    });
+  
     
     it('creates task', async () => {
       const req = { session: { user: 1 } };
