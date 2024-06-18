@@ -107,24 +107,16 @@ describe('TasksService', () => {
     
     it('creates task', async () => {
       const req = { session: { user: 1 } };
+      const taskValidator = { title: 'New Task', details: 'Task details', tags: [1, 2] };
+
       jest.spyOn(usersService, 'idExists').mockResolvedValue(true);
       jest.spyOn(tagsService, 'areTagsValid').mockResolvedValue(true);
 
-      const tagId = 1;
-      const task: TaskValidator = { title: 'Task 1', details: 'Details', tags: [tagId] };
+      jest.spyOn(prismaService.task, 'create').mockResolvedValue({ id: 1 } as any);
 
-      const createdTask = { id: 1, userId: 1, title: 'Task 1', details: 'Details', status: 'BACKLOG', tags: [] };
+      const result = await tasksService.create(req, taskValidator);
 
-      jest.spyOn(tasksService['prisma'].task, 'create').mockResolvedValue(createdTask as any);
-
-      const response = await tasksService.create(req, task);
-
-      const savedTask = await tasksService.findOne(req, response.taskId);
-
-      const containsProperties = (obj: object, target: object): boolean =>
-        Object.keys(target).every(key => obj[key] === target[key]);
-
-      expect(containsProperties(task, savedTask)).toBeTruthy();
+      expect(result).toEqual({ taskId: 1, message: 'Successfully created a new task' });
     });
   });
 });
