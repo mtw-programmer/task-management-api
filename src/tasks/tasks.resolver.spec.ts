@@ -16,7 +16,6 @@ function createContext(data: any): any {
 describe('TasksResolver', () => {
   let resolver: TasksResolver;
   let tasksService: TasksService;
-  let prismaService: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,7 +32,6 @@ describe('TasksResolver', () => {
 
     resolver = module.get<TasksResolver>(TasksResolver);
     tasksService = module.get<TasksService>(TasksService);
-    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
